@@ -9,7 +9,7 @@ ZIP_PATH=/tmp/latest.zip
 TMP_DIR=/tmp/wondercms-$RANDOM
 
 # get the latest files
-git clone --depth 1 -b dev https://github.com/robiso/wondercms "$TMP_DIR"
+git clone --depth 1 -b "$BRANCH" https://github.com/robiso/wondercms "$TMP_DIR"
 
 cd "$TMP_DIR"
 # install javascript dependencies
