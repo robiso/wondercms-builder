@@ -15,7 +15,7 @@ cd "$TMP_DIR"
 # install javascript dependencies
 yarn install
 # minify JS and CSS
-grunt
+./node_modules/.bin/grunt
 # install php dependencies
 composer install
 
