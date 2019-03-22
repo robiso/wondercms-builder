@@ -4,10 +4,10 @@
 # change this to master once the dev branch has been merged
 BRANCH=dev
 # change this to where the script should output the zip file
-ZIP_PATH=`pwd`/out
+ZIP_PATH=$(pwd)/out
 
 # name zip file based on branch and date
-CDATE=`date "+%Y-%m-%d"`
+CDATE=$(date "+%Y-%m-%d")
 ZIP_FILE=$ZIP_PATH/wondercms_$BRANCH-$CDATE.zip
 
 # change this to set where WonderCMS should be downloaded and built
@@ -22,7 +22,7 @@ fi
 git clone --depth 1 -b "$BRANCH" https://github.com/robiso/wondercms "$BUILD_DIR"
 
 # change to git clone directory
-cd "$BUILD_DIR"
+cd "$BUILD_DIR" || exit
 # install javascript dependencies
 yarn install
 # minify JS and CSS
@@ -43,7 +43,7 @@ fi
 # and only include files for relevant versions
 if [ -n "$1" ]; then
     if [ "$1" == "--apache" ]; then
-        ZIP_APPEND=`ls -a | grep ".htaccess"`
+        ZIP_APPEND=$(echo .htaccess*)
         REAL_OPTION=true
     else
         REAL_OPTION=false
@@ -55,7 +55,7 @@ fi
 # make zip archive
 zip -r "$ZIP_FILE" assets index.php plugins src/classes themes vendor version $ZIP_APPEND
 
-# check if a real option weas used
+# check if a real option was used
 # and print any included files or show ignored invalid option
 echo ""
 if [ "$REAL_OPTION" == "true" ]; then
