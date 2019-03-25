@@ -6,6 +6,11 @@ BRANCH=dev
 # change this to where the script should output the zip file
 ZIP_PATH=$(pwd)/out
 
+# attempt to make zip path if does not exist
+if [ ! -d "$ZIP_PATH" ]; then
+    mkdir -p "$ZIP_PATH"
+fi
+
 # name zip file based on branch and date
 CDATE=$(date "+%Y-%m-%d")
 ZIP_FILE=$ZIP_PATH/wondercms_$BRANCH-$CDATE.zip
@@ -34,20 +39,10 @@ composer install
 if [ -f "$ZIP_FILE" ]; then
     rm "$ZIP_FILE"
 fi
-# also attempt to make zip path if does not exist
-if [ ! -d "$ZIP_PATH" ]; then
-    mkdir -p "$ZIP_PATH"
-fi
 
-# check if command for apache was used
-# and only include files for relevant versions
-if [ -n "$1" ]; then
-    if [ "$1" == "--apache" ]; then
-        ZIP_APPEND=$(echo .htaccess*)
-        REAL_OPTION=true
-    else
-        REAL_OPTION=false
-    fi
+# check for apache command to include htaccess files
+if [ "$1" == "--apache" ]; then
+    ZIP_APPEND=$(echo .htaccess*)
 else
     ZIP_APPEND=""
 fi
@@ -55,16 +50,16 @@ fi
 # make zip archive
 zip -r "$ZIP_FILE" assets index.php plugins src/classes themes vendor version $ZIP_APPEND
 
-# check if a real option was used
-# and print any included files or show ignored invalid option
+# list extra apache files included
+# or notify that invalid command was ignored
 echo ""
-if [ "$REAL_OPTION" == "true" ]; then
+if [ -n "$ZIP_APPEND" ]; then
     echo "Option $1 was selected. Additional files included:"
     for arg in $ZIP_APPEND; do
         echo "    $arg"
     done
     echo ""
-elif [ "$REAL_OPTION" == "false" ]; then
+elif [ -n "$1" ]; then
     echo "Unknown option $1 was ignored!"
     echo "Use '.build.sh --apache' to build for an apache server."
     echo ""
@@ -76,4 +71,5 @@ if [ -f "$ZIP_FILE" ]; then
     echo "Output: $ZIP_FILE"
 else
     echo "Build command failed!"
+    exit 1
 fi
